@@ -368,17 +368,23 @@ bool openTrade (int type ,double tradeStop,double volume)
       double vbid    = MarketInfo(_Symbol,MODE_BID);
    double vask    = MarketInfo(_Symbol,MODE_ASK);
 
+
+ 
+ 
+ 
    if(type == 1)
    {
       //buy
-      vbid = vbid - tradeStop;
+      vbid =  vbid - tradeStop;
       vask = vask - tradeStop;
+     
+      
    }
    else
    {
       //sell
       vbid = vbid + tradeStop;
-      vask = vask + tradeStop;
+      vask = vask + tradeStop ;
    }
 
 
@@ -389,14 +395,14 @@ bool openTrade (int type ,double tradeStop,double volume)
    int setType = 0;
    if (type == 1)
    {
-      setType = OP_BUY;
+      setType = OP_BUYLIMIT;
       close = vask;
       title = "Buy order";
       arrowColor = clrGreen;
    }
    else if(type == -1)
    {
-      setType = OP_SELL;
+      setType = OP_SELLLIMIT;
       close = vbid;
       title = "Sell order";
       arrowColor = clrRed;
@@ -421,8 +427,9 @@ bool openTrade (int type ,double tradeStop,double volume)
     }
     
    
-   
-    
+   close = NormalizeDouble(close,Digits);
+    stopLoss = NormalizeDouble(stopLoss,Digits);
+    takeProfit = NormalizeDouble(takeProfit,Digits);
    
    //MqlTradeRequest request={0};
    //MqlTradeResult  result={0};
@@ -445,7 +452,7 @@ bool openTrade (int type ,double tradeStop,double volume)
    
    
       int ticket=OrderSend(Symbol(),setType,volume,close,5,stopLoss,takeProfit,title,EXPERT_MAGIC,0,arrowColor);
-   
+      Alert (GetLastError());   
       if(ticket>=0)
       {
             //order my be successed
