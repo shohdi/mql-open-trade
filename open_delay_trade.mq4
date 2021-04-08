@@ -367,6 +367,21 @@ bool openTrade (int type ,double tradeStop,double volume)
    
       double vbid    = MarketInfo(_Symbol,MODE_BID);
    double vask    = MarketInfo(_Symbol,MODE_ASK);
+
+   if(type == 1)
+   {
+      //buy
+      vbid = vbid - tradeStop;
+      vask = vask - tradeStop;
+   }
+   else
+   {
+      //sell
+      vbid = vbid + tradeStop;
+      vask = vask + tradeStop;
+   }
+
+
    double close = 0;
    string title = "";
    color arrowColor;
