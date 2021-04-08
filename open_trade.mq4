@@ -67,6 +67,9 @@ int noOfSuccess = 0;
 int lastDir = 0;
 
 
+
+
+
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -127,8 +130,18 @@ int OnInit()
     double lossOrWinPrice = getValueInUSD(historyMove * volume * lotSize);
    
    printf("volume to trade : %G , averageMove : %G , lossValue : %G",volume,historyMove,lossOrWinPrice);
-      
-     openTrade((int)tradeDirection,lossOrWinPrice,volume);
+                 int orderNums = getOpenedOrderNo();
+                  Print("found signal : current order number " ,orderNums );
+                  if(orderNums == 0)
+                  {
+                     Print("0 orders open , starting new order in dir : ",tradeDirection);
+                     openTrade((int)tradeDirection,lossOrWinPrice,volume);
+                  }
+                  else
+                  {
+                     Print("no trades becase there is open orders :  ",orderNums);
+                  }
+     
 //---
    return(INIT_SUCCEEDED);
   }
@@ -415,8 +428,7 @@ bool openTrade (int type ,double tradeStop,double volume)
 
    
    
-   if(lastTicket != 0)
-   {
+   
       int ticket=OrderSend(Symbol(),setType,volume,close,5,stopLoss,takeProfit,title,EXPERT_MAGIC,0,arrowColor);
    
       if(ticket>=0)
@@ -434,12 +446,24 @@ bool openTrade (int type ,double tradeStop,double volume)
                return true;
             }
       }
-   }
+   
    
    
      
      
      return false;
+   
+}
+
+
+int getOpenedOrderNo()
+{
+   int total1=PositionsTotal();
+   int total2=OrdersTotal();
+   
+   
+    //Print("Pending orders number ",total2," opened orders number ",total1);
+   return total1 + total2 ;
    
 }
 
