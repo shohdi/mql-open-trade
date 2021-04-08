@@ -15,16 +15,22 @@
 //+------------------------------------------------------------------+
 //| My custom types                                   |
 //+------------------------------------------------------------------+
+enum TRADE_TYPE
+{
+   SELL = -1,
+   BUY = 1
+}
 
 
-
-float percentageMoney = 0.01;
+input float percentageMoney = 0.01;
 double startBalance=0.0;
-double timeToTrade = 12.0;
+
+input double timeToTrade = 12.0;
+input TRADE_TYPE tradeDirection = TRADE_TYPE.BUY;
 
 
 
-#define EXPERT_MAGIC 188888   // MagicNumber of the expert
+input EXPERT_MAGIC 188888   // MagicNumber of the expert
 
 enum SmaCalcType
 {
@@ -122,7 +128,7 @@ int OnInit()
    
    printf("volume to trade : %G , averageMove : %G , lossValue : %G",volume,historyMove,lossOrWinPrice);
       
-     openTrade(1,lossOrWinPrice,volume);
+     openTrade((int)tradeDirection,lossOrWinPrice,volume);
 //---
    return(INIT_SUCCEEDED);
   }
@@ -409,25 +415,28 @@ bool openTrade (int type ,double tradeStop,double volume)
 
    
    
+   if(lastTicket != 0)
+   {
+      int ticket=OrderSend(Symbol(),setType,volume,close,5,stopLoss,takeProfit,title,EXPERT_MAGIC,0,arrowColor);
    
-   
-   int ticket=OrderSend(Symbol(),setType,volume,close,5,stopLoss,takeProfit,title,EXPERT_MAGIC,0,arrowColor);
-   
-    if(ticket>=0)
-     {
-         //order my be successed
-         
-         if(OrderSelect(ticket, SELECT_BY_TICKET)==true)
-         {
-            lastTicket = ticket;
-            lastDir = type;
+      if(ticket>=0)
+      {
+            //order my be successed
             
-          //  lastAverageMove = averageMove;
-           // lastOpenPrice = getCurrentClose();
-            
-            return true;
-         }
-     }
+            if(OrderSelect(ticket, SELECT_BY_TICKET)==true)
+            {
+               lastTicket = ticket;
+               lastDir = type;
+               
+            //  lastAverageMove = averageMove;
+            // lastOpenPrice = getCurrentClose();
+               
+               return true;
+            }
+      }
+   }
+   
+   
      
      
      return false;
