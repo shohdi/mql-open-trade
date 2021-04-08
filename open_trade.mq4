@@ -19,18 +19,18 @@ enum TRADE_TYPE
 {
    SELL = -1,
    BUY = 1
-}
+};
 
 
 input float percentageMoney = 0.01;
 double startBalance=0.0;
 
-input double timeToTrade = 12.0;
-input TRADE_TYPE tradeDirection = TRADE_TYPE.BUY;
+input double timeToTrade = 48.0;
+input TRADE_TYPE tradeDirection = TRADE_TYPE::BUY;
 
 
 
-input EXPERT_MAGIC 188888   // MagicNumber of the expert
+input int EXPERT_MAGIC =188888 ;  // MagicNumber of the expert
 
 enum SmaCalcType
 {
@@ -135,7 +135,7 @@ int OnInit()
                   if(orderNums == 0)
                   {
                      Print("0 orders open , starting new order in dir : ",tradeDirection);
-                     openTrade((int)tradeDirection,lossOrWinPrice,volume);
+                     openTrade((int)tradeDirection,historyMove,volume);
                   }
                   else
                   {
@@ -458,7 +458,7 @@ bool openTrade (int type ,double tradeStop,double volume)
 
 int getOpenedOrderNo()
 {
-   int total1=PositionsTotal();
+   int total1=0;//PositionsTotal();
    int total2=OrdersTotal();
    
    
