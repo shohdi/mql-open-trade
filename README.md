@@ -14,6 +14,8 @@ all files will not open more than one trade
 if your percent is too small it will reset to match the lowest lot size available to trade
 
 
+experts became ready and used live on 08-04-2021 18:22 UTC
+
 
 if you like this work , your donate is appretiated to bitcoin wallet address :
 bc1q6zrsxk6x6wjj3573s4fee46c8h3wagjskpc6p3
