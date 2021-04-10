@@ -76,9 +76,9 @@ int lastDir = 0;
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 
-int buyTicket = null;
-int sellTicket = null;
-int openTicket = null;
+int buyTicket = 0;
+int sellTicket = 0;
+int openTicket = 0;
 
 
 int calcAndOpenTrade(TRADE_TYPE tradeDirection)
