@@ -18,13 +18,14 @@ if your percent is too small it will reset to match the lowest lot size availabl
 experts became ready and used live on 08-04-2021 18:22 UTC
 
 you can use inputs to set the capital percentage , average trade number of hours  (default 48 hour trade)  , direction as buy and sell and Expert random number to recognize trades
-
-percentageMoney                  the capital percentage
-timeToTrade                      the average number of hours trade will be
-tradeDirection                   the direction of the trade (BUY 1 or SELL -1)
-EXPERT_MAGIC                     Trades magic number 
-
-
+<br>
+<br>
+percentageMoney  &nbsp; &nbsp;&nbsp;                 the capital percentage<br>
+timeToTrade     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                 the average number of hours trade will be<br>
+tradeDirection  &nbsp;&nbsp;&nbsp; &nbsp;                the direction of the trade (BUY 1 or SELL -1)<br>
+EXPERT_MAGIC       &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;             Trades magic number<br> 
+<br>
+<br>
 if you like my work , your donate is appretiated to bitcoin wallet address :
 bc1q6zrsxk6x6wjj3573s4fee46c8h3wagjskpc6p3
 
