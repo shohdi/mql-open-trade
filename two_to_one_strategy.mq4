@@ -26,7 +26,9 @@ input float percentageMoney = 0.01;
 double startBalance=0.0;
 
 input double timeToTrade = 48.0;
-input TRADE_TYPE tradeDirection = TRADE_TYPE::BUY;
+
+
+input double lossTimesWin = 2.0;
 
 
 
@@ -74,23 +76,21 @@ int lastDir = 0;
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 
+int buyTicket = null;
+int sellTicket = null;
+int openTicket = null;
 
 
-int OnInit()
-  {
-//--- create timer
-   EventSetTimer(1);
-      lastTick.ask = -1 ;
-      lastTick.bid = -1;
-      currentTick.ask = -1;
-      currentTick.bid = -1;
-      lastCandle.Close1 = -1;
+int calcAndOpenTrade(TRADE_TYPE tradeDirection)
+{
+    
+      
      
       
       
       double balance = AccountInfoDouble(ACCOUNT_BALANCE);
     
-         startBalance = balance;
+         
     
       
       
@@ -133,19 +133,44 @@ int OnInit()
     double lossOrWinPrice = getValueInUSD(historyMove * volume * lotSize);
    
    printf("volume to trade : %G , averageMove : %G , lossValue : %G",volume,historyMove,lossOrWinPrice);
-                 int orderNums = getOpenedOrderNo();
-                  Print("found signal : current order number " ,orderNums );
-                  if(orderNums == 0)
-                  {
-                     Print("0 orders open , starting new order in dir : ",tradeDirection);
-                     openTrade((int)tradeDirection,historyMove,volume);
-                  }
-                  else
-                  {
-                     Print("no trades becase there is open orders :  ",orderNums);
-                  }
+                 //int orderNums = getOpenedOrderNo();
+                  //Print("found signal : current order number " ,orderNums );
+                  //if(orderNums == 0)
+                  //{
+                     //Print("0 orders open , starting new order in dir : ",tradeDirection);
+                     int ret = openTrade((int)tradeDirection,historyMove,volume);
+                     return ret;
+                  //}
+                  //else
+                  //{
+                  //   Print("no trades becase there is open orders :  ",orderNums);
+                  //}
      
 //---
+}
+
+
+int OnInit()
+  {
+//--- create timer
+   EventSetTimer(1);
+
+   lastTick.ask = -1 ;
+      lastTick.bid = -1;
+      currentTick.ask = -1;
+      currentTick.bid = -1;
+      lastCandle.Close1 = -1;
+       buyTicket = null;
+ sellTicket = null;
+ openTicket = null;
+      
+     
+      
+      
+      double balance = AccountInfoDouble(ACCOUNT_BALANCE);
+    
+         startBalance = balance;
+      
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
@@ -362,7 +387,7 @@ double getPriceAtPosition(int pos)
    return closes1[0];
 }
 
-bool openTrade (int type ,double tradeStop,double volume)
+int openTrade (int type ,double tradeStop,double volume)
 {
    Print("Start order ");
    double balance = AccountInfoDouble(ACCOUNT_BALANCE);
@@ -378,16 +403,16 @@ bool openTrade (int type ,double tradeStop,double volume)
    if(type == 1)
    {
       //buy
-      vbid =  vbid - tradeStop;
-      vask = vask - tradeStop;
+      vbid =  vbid - (tradeStop * lossTimesWin) ;
+      vask = vask - (tradeStop * lossTimesWin) ;
      
       
    }
    else
    {
       //sell
-      vbid = vbid + tradeStop;
-      vask = vask + tradeStop ;
+      vbid = vbid + (tradeStop * lossTimesWin);
+      vask = vask + (tradeStop * lossTimesWin) ;
    }
 
 
@@ -455,7 +480,12 @@ bool openTrade (int type ,double tradeStop,double volume)
    
    
       int ticket=OrderSend(Symbol(),setType,volume,close,5,stopLoss,takeProfit,title,EXPERT_MAGIC,0,arrowColor);
-      Alert (GetLastError());   
+      int error = GetLastError();
+      if(error != 0)
+      {
+         Print(error);
+      }
+         
       if(ticket>=0)
       {
             //order my be successed
@@ -468,7 +498,7 @@ bool openTrade (int type ,double tradeStop,double volume)
             //  lastAverageMove = averageMove;
             // lastOpenPrice = getCurrentClose();
                
-               return true;
+               return ticket;
             }
       }
    
@@ -476,7 +506,7 @@ bool openTrade (int type ,double tradeStop,double volume)
    
      
      
-     return false;
+     return ticket;
    
 }
 
@@ -489,6 +519,26 @@ int getOpenedOrderNo()
    
     //Print("Pending orders number ",total2," opened orders number ",total1);
    return total1 + total2 ;
+   
+}
+
+void OnTick()
+{
+
+   int orders = getOpenedOrderNo();
+   if(orders == 0 && openTicket != 0)
+   {
+      openTicket = 0;
+   }
+
+   if(sellTicket == 0 && buyTicket == 0 && openTicket == 0)
+   {
+      //new
+      buyTicket = calcAndOpenTrade(TRADE_TYPE::BUY);
+      sellTicket = calcAndOpenTrade(TRADE_TYPE::SELL);
+      openTicket = 0;
+   }
+
    
 }
 
